@@ -1,0 +1,8 @@
+'use strict';
+(()=>{
+ const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ let city='';const el=document.createElement('section');el.id='settlement-support';el.className='section sources';document.querySelector('#sources').before(el);
+ function render(){const rows=(window.MACHI_SUPPORT_DATA||[]).filter(r=>r.city===city);el.innerHTML=`<div class="section-heading"><div><p class="eyebrow">PUBLIC SOURCES / SETTLEMENT SUPPORT</p><h2>移住・定住の支援制度を、出典から確認する。</h2></div></div><p class="notice">${esc(city||'先に地域・物件を選んでください')}。これは公式公開ページの参考情報です。機械可読のオープンデータや再利用ライセンスの確認済みデータではありません。短期滞在・国内ワーキングホリデーが自動的に対象になるわけではなく、支給・受付継続を保証しません。</p>${rows.length?rows.map(r=>`<article class="source-card"><h3>${esc(r.title)}</h3><span class="status-label">${esc(r.status)}</span><p>${esc(r.summary)}</p><p><strong>${esc(r.shortStay)}</strong></p><details><summary>主な条件と注意点</summary><ul>${r.conditions.map(x=>`<li>${esc(x)}</li>`).join('')}</ul><p>${r.caveats.map(esc).join('<br>')}</p></details><p>公開主体：${esc(r.owner)} / 資料種別：公式公開Webページ<br>ページ更新日：${esc(r.updated||'記載確認できず')} / 対象年度：${esc(r.fiscalYear||'未確認')} / 確認日：${esc(r.checked)}</p><p>条件・予算・最新の受付状況は公式窓口で確認してください。個別の受給資格を判定しません。</p><a href="${esc(r.url)}" target="_blank" rel="noopener noreferrer">${esc(r.sourceTitle)}（公式出典）↗</a>${r.additionalSources.map(x=>`<p><a href="${esc(x.url)}" target="_blank" rel="noopener noreferrer">${esc(x.title)} ↗</a></p>`).join('')}</article>`).join(''):'<p>この選択で表示する公式支援情報は未登録です。制度が存在しないことを意味しません。</p>'}`;}
+ document.addEventListener('machiholi:place',e=>{city=e.detail.city;render();});
+ document.querySelector('#region').addEventListener('change',e=>{city=e.target.value.split(' ').slice(1).join(' ');render();});render();
+})();

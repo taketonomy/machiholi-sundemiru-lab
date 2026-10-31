@@ -1,0 +1,19 @@
+v0.2.0 QA — 2026-10-31
+PASS: 11 original data/provenance assertions
+PASS: 11 opportunity state/visibility assertions
+PASS: app.js, opportunity-model.js, opportunities.js JavaScript syntax
+PASS: Chromium desktop and 390px mobile layout inspection
+PASS: all 5 municipality filters / original expected counts
+PASS: selected property context and clearing obsolete detail on region change
+PASS: human-review gates block incomplete confirmation
+PASS: confirmation does not publish; separate local demo action required
+PASS: expired, withdrawn, rejected and changed records excluded
+PASS: reconfirmation clears previous reviewer/gates
+PASS: inquiry draft reflects preferences and municipality; download works
+PASS: source edits reset draft; injected HTML rendered as text
+PASS: reload clears all demo state; no application page errors
+PASS: repository Markdown local links (551 files) and registry validation
+Not exercised: real hosts, actual participant review or production backend (not implemented)
+No real messages or bookings sent. No participant/administrator personal data embedded.
+PASS: support source assertions (6 programs, 5 cities, official URLs, stopped/older-source restrictions)
+PASS: municipality-matched support UI in Chromium

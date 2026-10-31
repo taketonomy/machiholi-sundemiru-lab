@@ -1,0 +1,12 @@
+PASS 44 original sample properties
+PASS five municipalities
+PASS all property identifiers unique
+PASS every property links exactly to municipality plan
+PASS source row and source provenance on each property
+PASS actual DIY record 7011578 retained
+PASS sale and rental categories not conflated
+PASS all linked KPI plan IDs exist
+PASS source urls and dates present
+PASS no invented host, coordinates or availability fields
+PASS UI discloses provisional scenarios and local-only behavior
+11 tests passed
