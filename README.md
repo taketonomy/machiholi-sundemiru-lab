@@ -6,8 +6,9 @@ Static working prototype for Team E at Project LINKS DATA × DATA 2026 (2026-10-
 
 Collaborators who participated as Team Machiholi! at the [LINKS: POWER of DATA x DATA 2026 Ideathon](https://connpass.com/event/407264/):
 
-- Masaki Nishida
-- Sakurako Aoyama
+- Masaki
+- Sakurako
+- Taketo
 
 ## Scope
 
