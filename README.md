@@ -1,5 +1,9 @@
 # まちホリ！ 住んでみるラボ
 
+## About
+
+Machiholi! Living Trial Lab — A prototype for exploring stays that combine remote work with local DIY activities, using real vacant-home and transport data. It helps clarify mobility options and community participation requirements, and provides source-linked information on relocation and settlement support.
+
 Static working prototype for Team E at Project LINKS DATA × DATA 2026 (2026-10-31).
 
 ## Team Machiholi! / Collaborators
