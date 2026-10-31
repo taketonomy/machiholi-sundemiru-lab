@@ -2,6 +2,13 @@
 
 Static working prototype for Team E at Project LINKS DATA × DATA 2026 (2026-10-31).
 
+## まちホリ！チームメンバー / Collaborators
+
+[【アイデアソン】LINKS:POWER of DATA x DATA 2026](https://connpass.com/event/407264/)で、チーム「まちホリ！」として参加したコラボレーター：
+
+- Masaki Nishida
+- Sakurako Aoyama
+
 ## Scope
 
 Discover a place to try living while continuing remote work and exploring participation in vacant-home DIY with the local community. The design distinguishes physical access from community acceptance. It does not claim that listed houses are currently available, suitable for short stays, or accepting DIY participants.
