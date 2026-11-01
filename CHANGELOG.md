@@ -2,6 +2,8 @@
 
 ## v0.2.1 — 2026-11-01
 
+- Made the prototype version badge link to the revision history section.
+
 - Added a top-right history icon and 更新履歴 link, visible on desktop and mobile, pointing to the revision history section.
 
 - Added the original 20-second Machiholi PV in the hero’s right column, replacing the static illustration, with native playback controls, inline playback and no autoplay.
