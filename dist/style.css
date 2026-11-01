@@ -7,3 +7,5 @@
 .pv-section{padding-top:20px}.pv-player{display:block;width:100%;max-width:960px;height:auto;aspect-ratio:16/9;object-fit:contain;margin:0 auto;background:#213e34;border:1px solid var(--line);border-radius:12px}.pv-player:focus-visible{outline:3px solid #d28a2d;outline-offset:4px}@media print{.pv-section{display:none}}
 
 .hero-video-title{font-size:16px;margin:0 0 12px}.hero-art .pv-player{width:100%;max-width:100%}.hero-art .small-note{margin:12px 0 6px}@media print{.hero-art{display:none}}
+
+nav .history-link{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:44px;padding:8px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;font-weight:600}nav .history-link:hover{background:#eef2e5;border-color:#a8baa0}.history-link svg{flex-shrink:0}@media(max-width:600px){nav .demo-tag{display:none}nav .history-link{display:inline-flex;font-size:11px;padding:8px 10px}}

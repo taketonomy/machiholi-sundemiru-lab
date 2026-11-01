@@ -2,6 +2,8 @@
 
 ## v0.2.1 — 2026-11-01
 
+- Added a top-right history icon and 更新履歴 link, visible on desktop and mobile, pointing to the revision history section.
+
 - Added the original 20-second Machiholi PV in the hero’s right column, replacing the static illustration, with native playback controls, inline playback and no autoplay.
 - Added visible revision history and a link to this changelog. Updated the visible version and inquiry-draft label to v0.2.1.
 - Original housing, transport and support-source records remain unchanged.
