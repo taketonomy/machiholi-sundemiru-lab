@@ -8,4 +8,4 @@
 
 .hero-video-title{font-size:16px;margin:0 0 12px}.hero-art .pv-player{width:100%;max-width:100%}.hero-art .small-note{margin:12px 0 6px}@media print{.hero-art{display:none}}
 
-nav .history-link{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:44px;padding:8px 12px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;font-weight:600}nav .history-link:hover{background:#eef2e5;border-color:#a8baa0}.history-link svg{flex-shrink:0}@media(max-width:600px){nav .demo-tag{display:none}nav .history-link{display:inline-flex;font-size:11px;padding:8px 10px}}
+nav .demo-tag{display:inline-flex;align-items:center;justify-content:center;min-height:44px;text-align:center}nav .demo-tag:hover{background:#e4ebd6;border-color:#a8baa0}@media(max-width:600px){nav .demo-tag{display:inline-flex;max-width:138px;line-height:1.5;padding:6px 9px}header{gap:12px}.brand{flex-shrink:0}}
