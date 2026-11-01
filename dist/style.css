@@ -5,3 +5,5 @@
 #community>details{margin-top:24px}#community summary{cursor:pointer;font-weight:700}#community textarea,#community input:not([type=checkbox]){width:100%;max-width:100%;font:inherit;padding:10px;border:1px solid var(--line);border-radius:6px;background:var(--white);color:var(--ink)}#community textarea{resize:vertical;display:block;margin-bottom:14px}#community .review-field{display:block;margin-top:14px;font-weight:600;font-size:12px}.evidence-line{display:block;color:var(--muted);font-size:10px}button:disabled{opacity:.5;cursor:default}#community :focus-visible{outline:3px solid #d28a2d;outline-offset:3px}footer{flex-wrap:wrap}footer>p:last-child{flex-basis:100%}
 
 .pv-section{padding-top:20px}.pv-player{display:block;width:100%;max-width:960px;height:auto;aspect-ratio:16/9;object-fit:contain;margin:0 auto;background:#213e34;border:1px solid var(--line);border-radius:12px}.pv-player:focus-visible{outline:3px solid #d28a2d;outline-offset:4px}@media print{.pv-section{display:none}}
+
+.hero-video-title{font-size:16px;margin:0 0 12px}.hero-art .pv-player{width:100%;max-width:100%}.hero-art .small-note{margin:12px 0 6px}@media print{.hero-art{display:none}}
