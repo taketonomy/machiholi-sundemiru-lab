@@ -26,7 +26,9 @@ Discover a place to try living while continuing remote work and exploring partic
 
 No external API, account creation, booking, message sending, persistent user storage or payment is used. User preferences stay in browser memory. A page reload resets them.
 
-## Version 0.2.0
+## Version 0.2.1
+
+v0.2.1 adds the 20-second PV and an on-page revision history.
 
 The [v0.2 specification](spec-v0.2.md) is implemented as a bounded browser prototype. See [CHANGELOG](CHANGELOG.md) for changes and production gaps.
 

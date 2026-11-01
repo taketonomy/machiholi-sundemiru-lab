@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.2.1 — 2026-11-01
+
+- Added the original 20-second Machiholi PV below the hero, with native playback controls, inline playback and no autoplay.
+- Added visible revision history and a link to this changelog. Updated the visible version and inquiry-draft label to v0.2.1.
+- Original housing, transport and support-source records remain unchanged.
+- Validated video metadata/play/pause, mobile width, version labels and existing data/state/support checks.
+
 ## v0.2.0 — 2026-10-31
 
 ### Implemented
