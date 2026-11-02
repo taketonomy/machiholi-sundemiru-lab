@@ -1,4 +1,4 @@
-/* v0.2.1: local demonstration only. No real opportunities or host identities. */
+/* v0.3.0: local demonstration only. No real opportunities or host identities. */
 (function(root){
   'use strict';
   const labels={draft:'下書き',awaiting_confirmation:'地域側の確認待ち',confirmed:'人による確認済み（デモ）',published:'閲覧用に反映済み（デモ）',needs_reconfirmation:'期限切れ・要再確認',withdrawn:'取り下げ',rejected:'却下'};

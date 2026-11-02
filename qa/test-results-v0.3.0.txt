@@ -1,0 +1,50 @@
+v0.3.0 QA — 2026-11-02T03:38Z
+syntax ok: dist/app.js
+syntax ok: dist/data.js
+syntax ok: dist/opportunities.js
+syntax ok: dist/opportunity-model.js
+syntax ok: dist/owner-model.js
+syntax ok: dist/owner.js
+syntax ok: dist/support-data.js
+syntax ok: dist/support.js
+PASS 44 original sample properties
+PASS five municipalities
+PASS all property identifiers unique
+PASS every property links exactly to municipality plan
+PASS source row and source provenance on each property
+PASS actual DIY record 7011578 retained
+PASS sale and rental categories not conflated
+PASS all linked KPI plan IDs exist
+PASS source urls and dates present
+PASS no invented host, coordinates or availability fields
+PASS UI discloses provisional scenarios and local-only behavior
+11 tests passed
+PASS unknown fields stay null with literal evidence
+PASS draft cannot publish
+PASS human gates required
+PASS confirmed is not published
+PASS explicit publication and municipality match
+PASS expired records excluded
+PASS withdrawal and important change exclude immediately
+PASS reconfirmation resets previous gates
+PASS rejected never visible
+PASS bad dates and missing provenance blocked
+PASS edits restart as draft without inherited review
+11 opportunity tests passed
+PASS support: 6 official programs / 5 cities, URLs and provenance, paused Iki, old short-stay source, Toba residency restriction
+PASS draft keeps source sentences and leaves unmentioned fields empty
+PASS "unknown" in the source is flagged, not resolved
+PASS structural safety is never inferred from text
+PASS draft cannot be published
+PASS every required safety item blocks publication
+PASS both owner and operator confirmation are required
+PASS fully confirmed offer publishes and becomes visible
+PASS any edit after publication returns to draft and clears confirmations
+PASS stay levels say "needs confirmation" until the lodging law item is checked
+PASS real (non-demo) offers cannot be registered
+PASS revenue is an explicit assumption and ignores invalid prices
+PASS keyword collisions do not misfile sentences (水道 is not a road, 家財 is not the building)
+PASS levels: as-is use has no stay; trial and DIY involve a stay
+13 owner tests passed
+PASS Chromium: filters, property context, review gates, confirm/publish, expiry, withdrawal, draft download, edits/XSS, mobile layout, reload reset; no page errors
+PASS Chromium owner flow: empty input, source-quoted draft, safety gate, two confirmations, publish preview, edit withdraws, stay legal status, XSS escape, mobile width, reload reset; no page errors

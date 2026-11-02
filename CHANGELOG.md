@@ -1,5 +1,27 @@
 # Changelog
 
+## v0.3.0 — 2026-11-02
+
+Owner entry point, per [spec-v0.3.md](spec-v0.3.md) P0.
+
+### Implemented
+
+- New section 「まず一度、そのままで。」 for owners who are not ready to "rent out" a vacant house. Three owner-chosen levels: (1) one-off as-is use (ghost-house experience, shoots, local events — no clearing out), (2) short trial stay, (3) DIY stay. Moving up is never required.
+- Free-text description → deterministic keyword draft. Each field keeps the source sentences it came from; unmentioned fields stay empty and are listed as needing confirmation; "不明" in the source is flagged, not resolved. Structural safety is never inferred and always shows "専門家による確認が必要（未確認）".
+- Safety checklist per level (structure by a professional, off-limits areas, insurance, neighbours, keys, fire/lighting/exits; plus night use and wildlife for as-is use; lodging law, water and network for stays; DIY scope and guidance for DIY stays). Publication is blocked until every item and both owner and operator confirmations are done.
+- Stay levels show the legal status as 「要確認」 until the lodging-law item is checked.
+- Optional revenue example (10% operator fee) clearly labelled as an assumption, not a promise.
+- Visitor-facing preview appears only after publication, labelled as fictional demo data with no exact location. Any edit after publication returns the offer to draft and clears both confirmations.
+- Version updated to v0.3.0 in title, navigation badge, revision history and inquiry draft. Original housing, transport and support-source records remain unchanged.
+
+### Prototype boundary
+
+The draft parser is local keyword matching, not AI. The live Claude call (P1) is not implemented and will run server-side. All owner input stays in browser memory and is cleared on reload. No real owners, properties, bookings, payments or messages.
+
+### Validation
+
+13 owner-model assertions (`tests/check-owner.cjs`), existing 11 data, 11 opportunity and support checks, JavaScript syntax checks, and Chromium checks for the existing flow (`tests/browser.cjs`) and the owner flow (`tests/browser-owner.cjs`): empty input, source-quoted draft, safety gate, two confirmations, publish preview, edit withdrawal, stay legal status, XSS escaping, mobile width and reload reset. Details in `qa/test-results-v0.3.0.txt`.
+
 ## v0.2.1 — 2026-11-01
 
 - Made the prototype version badge the single header link to revision history, visible on desktop and mobile. Removed the redundant separate history button.

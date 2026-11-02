@@ -26,6 +26,10 @@ Discover a place to try living while continuing remote work and exploring partic
 
 No external API, account creation, booking, message sending, persistent user storage or payment is used. User preferences stay in browser memory. A page reload resets them.
 
+## Version 0.3.0
+
+v0.3.0 adds an owner entry point — 「まず一度、そのままで。」 — where owners start with a one-off as-is use such as a ghost-house experience, then may move to trial stays or DIY stays. See the [v0.3 specification](spec-v0.3.md).
+
 ## Version 0.2.1
 
 v0.2.1 adds the 20-second PV and an on-page revision history.
@@ -48,8 +52,9 @@ Run from this directory:
 - `node tests/check-data.cjs`
 - `node tests/check-opportunities.cjs`
 - `node tests/check-support.cjs`
+- `node tests/check-owner.cjs`
 
-Optional browser regression: serve `dist/` on port 8765, then run `node tests/browser.cjs` with Playwright installed and Chromium available. Override `MACHI_TEST_URL` / `CHROMIUM_PATH` if needed.
+Optional browser regression: serve `dist/` on port 8765, then run `node tests/browser.cjs` and `node tests/browser-owner.cjs` with Playwright installed and Chromium available. Override `MACHI_TEST_URL` / `CHROMIUM_PATH` if needed.
 
 The hosting identity is managed separately; do not copy a Site project ID into other deployments.
 
