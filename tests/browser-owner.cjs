@@ -11,7 +11,10 @@ const {chromium}=require('playwright'),assert=require('node:assert/strict');
   await p.click('#owner-draft');assert.equal(await p.locator('[name=owner-level]').count(),0);
 
   // Example → draft keeps source sentences; structural safety stays unconfirmed.
-  await p.click('#owner-example');await p.selectOption('#owner-city',{index:1});await p.click('#owner-draft');
+  // No Claude endpoint on the static test server, so the keyword draft is used and labelled.
+  const drafted=async src=>{await p.click('#owner-draft');await p.waitForSelector(`#owner-draft-source[data-source=${src}]`);};
+  await p.click('#owner-example');await p.selectOption('#owner-city',{index:1});await drafted('keyword');
+  assert((await p.locator('#owner-draft-source').innerText()).includes('簡易処理'));
   const draft=await p.locator('#owners').innerText();
   assert(draft.includes('「荷物はほとんどそのまま残っています。」'));
   assert(draft.includes('専門家による確認が必要（未確認）'));
@@ -39,13 +42,31 @@ const {chromium}=require('playwright'),assert=require('node:assert/strict');
   assert((await p.locator('#owners').innerText()).includes('宿泊の扱い：要確認'));
 
   // HTML in owner text is escaped.
-  await p.fill('#owner-text','木造の家です。<img src=x onerror=alert(1)>');await p.click('#owner-draft');
+  await p.fill('#owner-text','木造の家です。<img src=x onerror=alert(1)>');await drafted('keyword');
   assert.equal(await p.locator('#owners img').count(),0);
+
+  // Mocked Claude endpoint: verbatim quotes are kept, an invented one is dropped,
+  // the request carries only city and text, and the button is disabled while waiting.
+  let sent=null;
+  await p.route('**/api/owner-draft',async r=>{sent=JSON.parse(r.request().postData());await new Promise(z=>setTimeout(z,300));
+    await r.fulfill({status:200,contentType:'application/json',body:JSON.stringify({model:'claude-opus-5-5',raw:{fields:{building:['木造の家です。','耐震性に問題はありません。'],contents:[],condition:[],utilities:[],access:[],timing:[],wish:[]},unknown:[{field:'condition',note:'傷みの記載がない'}]}})});});
+  await p.fill('#owner-text','木造の家です。');await p.click('#owner-draft');
+  assert(await p.locator('#owner-draft').isDisabled());
+  await p.waitForSelector('#owner-draft-source[data-source=claude]');
+  const cl=await p.locator('#owners').innerText();
+  assert(cl.includes('「木造の家です。」'));assert(!cl.includes('耐震性に問題はありません'));
+  assert(cl.includes('傷みの記載がない'));assert(cl.includes('専門家による確認が必要（未確認）'));
+  assert.deepEqual(Object.keys(sent).sort(),['city','text']);
+  // Endpoint failure falls back to the keyword draft.
+  await p.unroute('**/api/owner-draft');
+  await p.route('**/api/owner-draft',r=>r.fulfill({status:503,contentType:'application/json',body:'{"fallback":true}'}));
+  await drafted('keyword');
+  await p.unroute('**/api/owner-draft');
 
   await p.setViewportSize({width:390,height:844});
   assert(await p.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth));
   await p.reload();assert.equal(await p.locator('#owner-offer').count(),0);
   assert.equal(errors.length,0,errors.join('\n'));
   await b.close();
-  console.log('PASS Chromium owner flow: empty input, source-quoted draft, safety gate, two confirmations, publish preview, edit withdraws, stay legal status, XSS escape, mobile width, reload reset; no page errors');
+  console.log('PASS Chromium owner flow: empty input, keyword fallback label, source-quoted draft, safety gate, two confirmations, publish preview, edit withdraws, stay legal status, XSS escape, mocked Claude draft (verbatim quotes kept, invented claim dropped, busy button, city+text only), endpoint failure fallback, mobile width, reload reset; no page errors');
 })().catch(e=>{console.error(e);process.exit(1);});

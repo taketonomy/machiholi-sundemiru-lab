@@ -1,5 +1,27 @@
 # Changelog
 
+## v0.4.0 — 2026-11-02
+
+Live Claude draft for the owner entry point, per [spec-v0.3.md](spec-v0.3.md) P1, and Vercel hosting preparation.
+
+### Implemented
+
+- `api/owner-draft.js` (Vercel Node function; logic in `server/owner-draft.cjs`): `POST {city, text}` → Claude (`claude-opus-5-5`, `effort: low`) with a JSON schema that has one array of verbatim quotes per field and a list of unknowns. The system prompt forbids inference, safety or legal judgements, and treats the owner text as data, not instructions. Server-side refusal fallback (`fallbacks: "default"`) is enabled.
+- `MACHI_OWNER.fromQuotes()`: shared validator used by the server and again by the browser. A quote is kept only if it appears word for word in the owner's text; paraphrases, invented claims and unknown fields are dropped; structural safety stays 「専門家による確認が必要（未確認）」.
+- The browser calls the endpoint, disables the button while waiting, ignores stale replies, and labels the draft source (Claude or keyword). Any failure — no endpoint (static hosting), no key (503), rate limit (429), refusal, `max_tokens`, invalid JSON, no verbatim quote, network error or 30 s timeout — falls back to the v0.3 keyword draft.
+- Input limits (2,000 characters, city 40), POST only, `Cache-Control: no-store`, optional origin check (`MACHI_ALLOWED_ORIGIN`), best-effort per-IP rate limit. Owner text is never logged.
+- `package.json`, `vercel.json` (serves `dist/`, 30 s function limit, security headers). Deployment steps in README.
+- Version updated to v0.4.0 in title, badge, revision history and labels.
+
+### Not done
+
+- No live call was made during development (no API key in the build environment). The request shape was checked against the SDK with a mocked transport. A real smoke test is needed after the key is set in Vercel.
+- The ChatGPT Sites deployment still serves v0.2.1 and has no server function.
+
+### Validation
+
+10 endpoint tests with Claude mocked (`tests/check-owner-draft-api.cjs`), 17 owner-model tests (4 new), existing data, opportunity and support checks, and both Chromium flows. The owner flow now also covers a mocked Claude reply (an invented claim is dropped) and endpoint failure. Details in `qa/test-results-v0.4.0.txt`.
+
 ## v0.3.0 — 2026-11-02
 
 Owner entry point, per [spec-v0.3.md](spec-v0.3.md) P0.

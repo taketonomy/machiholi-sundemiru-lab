@@ -1,16 +1,32 @@
 'use strict';
-/* v0.3.0 owner entry point UI. In-memory only; reload clears everything. */
+/* v0.4.0 owner entry point UI. In-memory only; reload clears everything.
+   Drafts come from the server-side Claude endpoint when it is available,
+   otherwise from the local keyword reader. No API key exists in the browser. */
 (()=>{
   const M=window.MACHI_OWNER,$=s=>document.querySelector(s);
   const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const el=document.createElement('section');el.id='owners';el.className='section';$('#sources').before(el);
   const example='【架空の例・実在しません】祖父母が住んでいた木造の平屋です。荷物はほとんどそのまま残っています。雨漏りがあるかは不明です。電気と水道は止めています。駅から車で15分、庭に車を2台とめられます。秋の週末なら使ってもらっても構いません。草刈りだけでも誰かに手伝ってほしいです。';
-  let offer=null,text='',city='',message='';
+  const ENDPOINT='/api/owner-draft',TIMEOUT=30000;
+  let offer=null,text='',city='',message='',busy=false,ticket=0;
+
+  /* Returns a Claude draft, or null so the caller falls back to the keyword draft. */
+  async function claudeDraft(c,t){
+    const ctl=new AbortController(),timer=setTimeout(()=>ctl.abort(),TIMEOUT);
+    try{
+      const r=await fetch(ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({city:c,text:t}),signal:ctl.signal});
+      if(!r.ok)return null;
+      const j=await r.json();
+      return M.fromQuotes(c,t,j&&j.raw);
+    }catch(_){return null;}finally{clearTimeout(timer);}
+  }
+
+  const sourceLabel=o=>o.source==='claude'?'Claudeによる下書き（原文にある文だけを残しています）':'簡易処理による下書き（Claudeに接続できないため、キーワードで文を拾いました）';
 
   const cities=()=>[...document.querySelectorAll('#region option')].map(o=>o.value).filter(Boolean);
 
   function draftTable(o){
-    return `<dl class="data-table">${M.fields.map(f=>`<div><dt>${esc(f.label)}</dt><dd>${o.evidence[f.key]?o.evidence[f.key].map(s=>`「${esc(s)}」`).join('<br>'):'<span class="unknown">記載なし（推定しません）</span>'}</dd></div>`).join('')}<div><dt>躯体の安全</dt><dd><strong>${esc(o.structure)}</strong></dd></div></dl>${o.unknown.length?`<p class="notice">確認が必要な点：${o.unknown.map(esc).join('、')}</p>`:''}`;
+    return `<p class="status-label" id="owner-draft-source" data-source="${esc(o.source)}">${esc(sourceLabel(o))}</p><dl class="data-table">${M.fields.map(f=>`<div><dt>${esc(f.label)}</dt><dd>${o.evidence[f.key]?o.evidence[f.key].map(s=>`「${esc(s)}」`).join('<br>'):'<span class="unknown">記載なし（推定しません）</span>'}</dd></div>`).join('')}<div><dt>躯体の安全</dt><dd><strong>${esc(o.structure)}</strong></dd></div></dl>${o.unknown.length?`<p class="notice">確認が必要な点：${o.unknown.map(esc).join('、')}</p>`:''}`;
   }
 
   function levelPicker(o){
@@ -38,10 +54,10 @@
   }
 
   function render(){
-    el.innerHTML=`<div class="section-heading"><div><p class="eyebrow">FOR OWNERS · v0.3.0</p><h2>まず一度、<em>そのままで</em>。</h2></div><a href="#discover">訪問者の画面へ ↑</a></div>
+    el.innerHTML=`<div class="section-heading"><div><p class="eyebrow">FOR OWNERS · v0.4.0</p><h2>まず一度、<em>そのままで</em>。</h2></div><a href="#discover">訪問者の画面へ ↑</a></div>
     <p>空き家を「貸す」準備ができていなくても大丈夫。片付けずに、ゴーストハウス体験や撮影などで一度だけ使ってもらうところから始められます。続けるかどうかは、反応を見てオーナーが決めます。</p>
-    <p class="notice">これはデモです。入力は端末のメモリだけに残り、再読み込みで消えます。氏名・正確な住所・連絡先は入力しないでください。下書きはAIではなく、キーワードで文を拾う簡易処理です（Claudeによる下書きは次の段階で追加）。</p>
-    <div class="detail-grid"><div class="panel"><h3>1. 今の状態を、そのまま書く</h3><label class="review-field" for="owner-city">地域（市町村まで）</label><select id="owner-city"><option value="">選ばない</option>${cities().map(c=>`<option ${c===city?'selected':''}>${esc(c)}</option>`).join('')}</select><label class="review-field" for="owner-text">建物の様子（自由記述）</label><textarea id="owner-text" rows="8" maxlength="2000" placeholder="例：祖母の家。荷物はそのまま。雨漏りは不明。">${esc(text)}</textarea><button class="button secondary" id="owner-example">架空の例を入れる</button> <button class="button secondary" id="owner-draft">下書きを作る</button></div>
+    <p class="notice">これはデモです。入力は端末のメモリだけに残り、再読み込みで消えます。氏名・正確な住所・連絡先は入力しないでください。下書きは、サーバーに接続できればClaudeが作り（入力はその処理にだけ使い、保存しません）、できなければキーワードで文を拾う簡易処理で作ります。どちらも、安全や法的な可否は判断しません。</p>
+    <div class="detail-grid"><div class="panel"><h3>1. 今の状態を、そのまま書く</h3><label class="review-field" for="owner-city">地域（市町村まで）</label><select id="owner-city"><option value="">選ばない</option>${cities().map(c=>`<option ${c===city?'selected':''}>${esc(c)}</option>`).join('')}</select><label class="review-field" for="owner-text">建物の様子（自由記述）</label><textarea id="owner-text" rows="8" maxlength="2000" placeholder="例：祖母の家。荷物はそのまま。雨漏りは不明。">${esc(text)}</textarea><button class="button secondary" id="owner-example">架空の例を入れる</button> <button class="button secondary" id="owner-draft" ${busy?'disabled aria-busy="true"':''}>${busy?'下書きを作成中…':'下書きを作る'}</button></div>
     <div class="panel"><h3>2. 下書きを確かめる</h3>${offer?draftTable(offer):'<p>左で書いた内容から、項目ごとに原文を拾って並べます。書かれていないことは空欄のまま残します。</p>'}</div></div>
     ${offer?`<div class="detail-grid"><div class="panel"><h3>3. 段階と安全を決める</h3>${levelPicker(offer)}${checks(offer)}${money(offer)}${gates(offer)}<p id="owner-feedback" class="notice" role="status">${esc(message)}</p></div>${preview(offer)}</div>`:''}`;
   }
@@ -49,7 +65,17 @@
   el.addEventListener('click',e=>{
     const id=e.target.id;
     if(id==='owner-example'){text=example;$('#owner-text').value=example;return;}
-    if(id==='owner-draft'){text=$('#owner-text').value;city=$('#owner-city').value;if(!text.trim()){message='';offer=null;render();return;}offer=M.draft(city,text);message='下書きを作りました。段階を選び、安全項目を確認してください。';render();return;}
+    if(id==='owner-draft'){
+      text=$('#owner-text').value;city=$('#owner-city').value;
+      if(!text.trim()){message='';offer=null;render();return;}
+      const mine=++ticket,c=city,t=text;busy=true;render();
+      claudeDraft(c,t).then(d=>{
+        if(mine!==ticket)return;
+        busy=false;offer=d||M.draft(c,t);
+        message='下書きを作りました。段階を選び、安全項目を確認してください。';render();
+      });
+      return;
+    }
     if(id==='owner-publish'){try{offer=M.publish(offer);message='訪問者向けに反映しました（デモ）。';}catch(err){message=err.message;}render();}
   });
 
