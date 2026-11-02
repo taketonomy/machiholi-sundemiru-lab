@@ -1,6 +1,7 @@
-/* v0.3.0: owner entry point (spec-v0.3.md). Local demonstration only.
-   No real owners, properties or bookings. The draft parser is a deterministic
-   keyword reader, not AI; a live Claude call is P1 and runs server-side. */
+/* v0.4.0: owner entry point (spec-v0.3.md). Local demonstration only.
+   No real owners, properties or bookings. draft() is a deterministic keyword
+   reader; fromQuotes() turns a Claude draft (server-side, api/owner-draft.js)
+   into the same shape and keeps only quotes that appear verbatim in the text. */
 (function(root){
   'use strict';
 
@@ -51,21 +52,51 @@
     return String(text||'').split(/(?<=[。！？!?\n])/).map(s=>s.trim()).filter(Boolean);
   }
 
-  function draft(city,text){
-    const ss=sentences(text),values={},evidence={},unknown=[];
+  /* Builds the draft object from per-field quotes. Shared by both draft sources. */
+  function build(city,text,quotes,notes,source){
+    const values={},evidence={},unknown=[];
     for(const f of fields){
-      const hit=ss.filter(s=>f.words.some(w=>s.includes(w)));
+      const hit=quotes[f.key]||[];
       evidence[f.key]=hit.length?hit:null;
       values[f.key]=hit.length?hit.join(' '):null;
       if(hit.some(s=>unknownWords.some(w=>s.includes(w))))unknown.push(f.label+'（原文に「不明」等の記載）');
       if(!hit.length)unknown.push(f.label+'（記載なし）');
+      for(const n of notes[f.key]||[])unknown.push(f.label+'（'+n+'）');
     }
     return {
-      city:String(city||''),demo:true,text:String(text||''),values,evidence,unknown,
+      city:String(city||''),demo:true,text:String(text||''),source,values,evidence,unknown,
       structure:'専門家による確認が必要（未確認）',
       level:null,checks:{},price:null,status:'draft',
-      gates:{owner:false,operator:false},history:[{action:'下書き作成'}]
+      gates:{owner:false,operator:false},history:[{action:source==='claude'?'下書き作成（Claude）':'下書き作成（簡易処理）'}]
     };
+  }
+
+  function draft(city,text){
+    const ss=sentences(text),quotes={};
+    for(const f of fields)quotes[f.key]=ss.filter(s=>f.words.some(w=>s.includes(w)));
+    return build(city,text,quotes,{},'keyword');
+  }
+
+  /* Accepts untrusted model output. A quote survives only if it appears verbatim in
+     the owner's text; anything else (paraphrase, inference, injected text) is dropped.
+     Notes are short plain strings attached to a known field. Returns null if unusable. */
+  const LIMITS={quotes:6,quote:300,notes:3,note:80};
+  function fromQuotes(city,text,raw){
+    const t=String(text||'');
+    if(!raw||typeof raw!=='object'||!raw.fields||typeof raw.fields!=='object')return null;
+    const quotes={},notes={};let kept=0;
+    for(const f of fields){
+      const list=Array.isArray(raw.fields[f.key])?raw.fields[f.key]:[];
+      quotes[f.key]=[...new Set(list.filter(q=>typeof q==='string').map(q=>q.trim()).filter(q=>q&&q.length<=LIMITS.quote&&t.includes(q)))].slice(0,LIMITS.quotes);
+      kept+=quotes[f.key].length;
+    }
+    for(const u of Array.isArray(raw.unknown)?raw.unknown:[]){
+      if(!u||!fields.some(f=>f.key===u.field)||typeof u.note!=='string'||!u.note.trim())continue;
+      (notes[u.field]=notes[u.field]||[]);
+      if(notes[u.field].length<LIMITS.notes)notes[u.field].push(u.note.trim().slice(0,LIMITS.note));
+    }
+    if(!kept&&t.trim())return null;
+    return build(city,t,quotes,notes,'claude');
   }
 
   const required=level=>levels[level]?[...checklist.common,...checklist[level]]:[];
@@ -108,6 +139,6 @@
 
   const visible=o=>!!o&&o.status==='published'&&errors(o).length===0;
 
-  const api={levels,checklist,fields,draft,required,errors,legalStatus,publish,edit,revenue,visible};
+  const api={levels,checklist,fields,draft,fromQuotes,LIMITS,required,errors,legalStatus,publish,edit,revenue,visible};
   if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.MACHI_OWNER=api;
 })(typeof window==='undefined'?globalThis:window);

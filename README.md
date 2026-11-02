@@ -24,7 +24,20 @@ Discover a place to try living while continuing remote work and exploring partic
 - Review a clearly labeled proposed stay scenario, not booked or scheduled activities.
 - Select questions to investigate, and download a local text planning memo.
 
-No external API, account creation, booking, message sending, persistent user storage or payment is used. User preferences stay in browser memory. A page reload resets them.
+Apart from the optional owner-draft endpoint below, no external API, account creation, booking, message sending, persistent user storage or payment is used. User preferences stay in browser memory. A page reload resets them.
+
+## Version 0.4.0
+
+v0.4.0 lets Claude write the owner draft on the server (`api/owner-draft.js`, a Vercel function). The browser sends only the city and the free text. Claude returns verbatim quotes per field under a JSON schema; the server and the browser both keep only quotes found word-for-word in the owner's text. Claude does not judge safety or legality, and the safety checklist and the two confirmations still gate publication. If the endpoint is missing, unconfigured, rate-limited, refused or fails, the page uses the local keyword draft and says so. The API key lives only in the server environment.
+
+### Deploy to Vercel
+
+1. Import the repository in Vercel (no framework, no build command; `vercel.json` serves `dist/` and the function).
+2. Add the environment variable `ANTHROPIC_API_KEY` (Production, and Preview only if wanted). Set a monthly spend limit on that key in the Claude Console.
+3. Optional: `MACHI_ALLOWED_ORIGIN=https://<your-domain>` to reject requests from other origins.
+4. Deploy. Without the key the site still works with the keyword draft.
+
+Local run with the function: `npm install`, then `npx vercel dev`. Model: `claude-opus-5-5` with `effort: low`, structured output and the server-side refusal fallback. Owner text is not logged; the function keeps a best-effort limit of 10 requests per minute per IP and instance.
 
 ## Version 0.3.0
 
@@ -44,7 +57,7 @@ The [v0.2 specification](spec-v0.2.md) is implemented as a bounded browser proto
 
 ## Run and test
 
-`dist/` is buildless HTML, CSS and JavaScript. Serve it with any static server. No build/dependency install is needed.
+`dist/` is buildless HTML, CSS and JavaScript. Serve it with any static server; no build is needed. `npm install` is needed only for the server function (`@anthropic-ai/sdk`).
 
 Run from this directory:
 
@@ -53,6 +66,8 @@ Run from this directory:
 - `node tests/check-opportunities.cjs`
 - `node tests/check-support.cjs`
 - `node tests/check-owner.cjs`
+- `node tests/check-owner-draft-api.cjs` (Claude mocked; no key, no network)
+- or all of the above: `npm test`
 
 Optional browser regression: serve `dist/` on port 8765, then run `node tests/browser.cjs` and `node tests/browser-owner.cjs` with Playwright installed and Chromium available. Override `MACHI_TEST_URL` / `CHROMIUM_PATH` if needed.
 
